@@ -1,0 +1,44 @@
+# Kubernetes ConfigMap for Node.js Hello World HTTP Server
+# 
+# This ConfigMap centralizes configuration management for the application
+# when deployed in a Kubernetes environment. It provides environment variables
+# that will be consumed by the Node.js application.
+#
+# Usage:
+# - Reference in Deployments using envFrom:
+#   envFrom:
+#   - configMapRef:
+#       name: nodejs-hello-world-config
+#
+# - Or reference individual values:
+#   env:
+#   - name: PORT
+#     valueFrom:
+#       configMapKeyRef:
+#         name: nodejs-hello-world-config
+#         key: PORT
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nodejs-hello-world-config
+  labels:
+    app: nodejs-hello-world
+    component: backend
+  annotations:
+    description: "Configuration for Node.js Hello World HTTP server"
+data:
+  # The port number the HTTP server will listen on (1024-65535)
+  PORT: "3000"
+  
+  # The host address the HTTP server will bind to
+  # 0.0.0.0 binds to all interfaces
+  HOST: "0.0.0.0"
+  
+  # The runtime environment for the Node.js application
+  # Valid values: development, production, test
+  NODE_ENV: "production"
+  
+  # The logging level for the application
+  # Valid values: error, warn, info, debug
+  LOG_LEVEL: "info"
