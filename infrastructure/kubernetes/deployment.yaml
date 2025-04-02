@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-hello-world
+  labels:
+    app: nodejs-hello-world
+    component: backend
+  annotations:
+    description: "Node.js Hello World HTTP server deployment"
+spec:
+  # Maintain 2 replicas for redundancy while keeping resource usage low
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nodejs-hello-world
+  # Use RollingUpdate strategy to ensure zero-downtime deployments
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: nodejs-hello-world
+        component: backend
+    spec:
+      containers:
+      - name: nodejs-hello-world
+        image: nodejs-hello-world:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        # Load configuration from ConfigMap
+        envFrom:
+        - configMapRef:
+            name: nodejs-hello-world-config
+        # Resource requirements based on technical specifications
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+        # Health checks using the /hello endpoint
+        livenessProbe:
+          httpGet:
+            path: /hello
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          timeoutSeconds: 3
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /hello
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 2
+        # Security best practices to reduce attack surface
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      # Allow graceful shutdown of the application
+      terminationGracePeriodSeconds: 30
