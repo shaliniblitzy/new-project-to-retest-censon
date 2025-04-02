@@ -1,0 +1,56 @@
+# Prometheus configuration for Node.js Hello World application
+# Version: 2.30.0
+
+# Global configuration
+global:
+  scrape_interval: 15s      # How frequently to scrape targets by default
+  evaluation_interval: 15s  # How frequently to evaluate rules
+  scrape_timeout: 10s       # How long until a scrape request times out
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+
+  # Node.js Hello World application
+  - job_name: 'nodejs-hello-world'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['nodejs-hello-world:3000']
+        labels:
+          service: 'nodejs-hello-world'
+          component: 'backend'
+
+  # Node exporter for hardware and OS metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node-exporter'
+
+# Alerting configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+# Rules files for alerts and recording rules
+rule_files:
+  - 'alert_rules.yml'
+
+# Storage retention settings
+storage:
+  tsdb:
+    retention:
+      time: 15d   # How long to retain metrics
+      size: 512MB # Maximum storage size
+
+# Security settings (minimal for development environment)
+# For production, consider enabling TLS and authentication
+basic_auth_enabled: false
+tls_enabled: false
