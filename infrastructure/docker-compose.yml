@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  nodejs-hello-world:
+    build:
+      context: ../src/backend
+      dockerfile: ../infrastructure/Dockerfile
+      target: build  # Use the build stage for development
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - HOST=0.0.0.0
+      - LOG_LEVEL=debug
+    volumes:
+      - ../src/backend:/app
+      - node_modules:/app/node_modules
+    restart: unless-stopped
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/hello", "||", "exit", "1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    command: >
+      sh -c "npm install && npm run dev"  # Install all dependencies (including dev) and run nodemon
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  node_modules:
+    driver: local
