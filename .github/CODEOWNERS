@@ -1,0 +1,34 @@
+# Each line is a file pattern followed by one or more owners.
+# Order is important; the last matching pattern takes precedence.
+
+# Default owners for everything in the repo
+* @project-admin @lead-developer
+
+# Backend code ownership
+/src/backend/ @backend-team-lead @server-developer
+/src/backend/src/ @backend-team-lead @server-developer
+/src/backend/src/handlers/ @api-developer @server-developer
+/src/backend/src/server.js @server-developer
+/src/backend/src/router.js @server-developer
+/src/backend/src/config.js @backend-team-lead
+/src/backend/src/logger.js @backend-team-lead
+
+# Test code ownership
+/src/backend/tests/ @qa-engineer @backend-team-lead
+/src/backend/tests/integration.test.js @qa-engineer
+
+# Infrastructure code ownership
+/infrastructure/ @devops-engineer @backend-team-lead
+/infrastructure/Dockerfile @devops-engineer
+/infrastructure/docker-compose.yml @devops-engineer
+/infrastructure/kubernetes/ @devops-engineer
+/infrastructure/monitoring/ @devops-engineer @backend-team-lead
+
+# CI/CD workflow ownership
+/.github/workflows/ @devops-engineer @backend-team-lead
+
+# Documentation ownership
+*.md @documentation-lead @project-admin
+README.md @documentation-lead @project-admin
+API.md @api-developer @documentation-lead
+CONTRIBUTING.md @project-admin
